@@ -5,8 +5,9 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 
-import { getRestaurants, getBestSellerRestaurants, searchRestaurants } from '@/lib/api/resto';
+import { getRestaurants, getBestSellerRestaurants, searchRestaurants, getRecommendedRestaurants, getNearbyRestaurants } from '@/lib/api/resto';
 import { queryKeys } from '@/lib/query/keys';
+import { useAuthStore } from '@/store/auth';
 import { RestaurantCard } from '@/components/shared/restaurant-card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ function RestaurantCardSkeleton() {
 export default function HomePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { token } = useAuthStore();
 
   const [searchInput, setSearchInput] = useState(searchParams.get('q') ?? '');
   const searchQuery = searchParams.get('q') ?? '';
@@ -61,6 +63,18 @@ export default function HomePage() {
     queryKey: queryKeys.restaurants.bestSeller({ limit: 4 }),
     queryFn: () => getBestSellerRestaurants({ limit: 4 }),
     enabled: !searchQuery && !category && !rating,
+  });
+
+  const { data: recommended, isLoading: isLoadingRecommended } = useQuery({
+    queryKey: queryKeys.restaurants.recommended,
+    queryFn: getRecommendedRestaurants,
+    enabled: !!token && !searchQuery && !category && !rating,
+  });
+
+  const { data: nearby, isLoading: isLoadingNearby } = useQuery({
+    queryKey: queryKeys.restaurants.nearby({ limit: 4 }),
+    queryFn: () => getNearbyRestaurants({ limit: 4 }),
+    enabled: !!token && !searchQuery && !category && !rating,
   });
 
   function applyParam(key: string, value: string) {
@@ -144,6 +158,38 @@ export default function HomePage() {
           ) : (bestSellers?.restaurants?.length ?? 0) === 0 ? null : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {bestSellers?.restaurants?.map((r) => <RestaurantCard key={r.id} restaurant={r} />)}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Recommended Section (auth only) */}
+      {showBestSeller && !!token && (
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Rekomendasi untuk Kamu</h2>
+          {isLoadingRecommended ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {Array.from({ length: 4 }).map((_, i) => <RestaurantCardSkeleton key={i} />)}
+            </div>
+          ) : (recommended?.length ?? 0) === 0 ? null : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {recommended?.map((r) => <RestaurantCard key={r.id} restaurant={r} />)}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Nearby Section (auth only) */}
+      {showBestSeller && !!token && (
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Restoran Terdekat</h2>
+          {isLoadingNearby ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {Array.from({ length: 4 }).map((_, i) => <RestaurantCardSkeleton key={i} />)}
+            </div>
+          ) : (nearby?.length ?? 0) === 0 ? null : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {nearby?.map((r) => <RestaurantCard key={r.id} restaurant={r} />)}
             </div>
           )}
         </section>

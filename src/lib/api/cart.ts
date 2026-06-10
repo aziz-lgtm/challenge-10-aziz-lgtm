@@ -3,7 +3,7 @@ import type { CartGroup } from '@/types';
 
 export async function getCart(): Promise<CartGroup[]> {
   const res = await apiClient.get<{ data: CartGroup[] }>('/api/cart');
-  return res.data.data;
+  return Array.isArray(res.data.data) ? res.data.data : [];
 }
 
 export async function addToCart(payload: { restaurantId: number; menuId: number; quantity: number }): Promise<void> {

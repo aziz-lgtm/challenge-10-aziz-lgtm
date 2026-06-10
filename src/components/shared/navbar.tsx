@@ -48,7 +48,7 @@ export function Navbar() {
                   )}
                 </Button>
               </Link>
-              <Link href="/orders">
+              <Link href="/profile">
                 <Button variant="ghost" size="icon">
                   <User className="size-5" />
                 </Button>
