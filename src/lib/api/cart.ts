@@ -6,7 +6,7 @@ export async function getCart(): Promise<CartGroup[]> {
   return res.data.data;
 }
 
-export async function addToCart(payload: { restaurantId: string; menuId: string; quantity: number }): Promise<void> {
+export async function addToCart(payload: { restaurantId: number; menuId: number; quantity: number }): Promise<void> {
   await apiClient.post('/api/cart', payload);
 }
 

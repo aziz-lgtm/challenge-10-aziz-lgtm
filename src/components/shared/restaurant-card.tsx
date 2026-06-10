@@ -14,9 +14,9 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
     <Link href={`/resto/${restaurant.id}`}>
       <Card className="overflow-hidden hover:shadow-md transition-shadow h-full">
         <div className="relative h-40 bg-muted">
-          {restaurant.image ? (
+          {restaurant.logo ? (
             <Image
-              src={restaurant.image}
+              src={restaurant.logo}
               alt={restaurant.name}
               fill
               className="object-cover"
@@ -33,16 +33,16 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
           <h3 className="font-semibold text-sm line-clamp-1">{restaurant.name}</h3>
           <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
             <MapPin className="size-3 shrink-0" />
-            <span className="line-clamp-1">{restaurant.location}</span>
+            <span className="line-clamp-1">{restaurant.place}</span>
           </div>
           <div className="flex items-center justify-between mt-2">
             <div className="flex items-center gap-1 text-xs">
               <Star className="size-3 fill-yellow-400 text-yellow-400" />
-              <span className="font-medium">{restaurant.rating?.toFixed(1) ?? '—'}</span>
+              <span className="font-medium">{restaurant.star?.toFixed(1) ?? '—'}</span>
             </div>
             <span className="text-xs text-muted-foreground">
-              Rp{restaurant.priceMin?.toLocaleString('id-ID')}
-              {restaurant.priceMax ? ` - ${restaurant.priceMax.toLocaleString('id-ID')}` : '+'}
+              Rp{restaurant.priceRange?.min?.toLocaleString('id-ID')}
+              {restaurant.priceRange?.max ? ` - ${restaurant.priceRange.max.toLocaleString('id-ID')}` : '+'}
             </span>
           </div>
         </CardContent>

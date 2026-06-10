@@ -32,7 +32,7 @@ function DetailSkeleton() {
   );
 }
 
-function MenuCard({ menu, restaurantId }: { menu: Menu; restaurantId: string }) {
+function MenuCard({ menu, restaurantId }: { menu: Menu; restaurantId: number }) {
   const { token } = useAuthStore();
   const queryClient = useQueryClient();
   const [quantity, setQuantity] = useState(1);
@@ -41,7 +41,7 @@ function MenuCard({ menu, restaurantId }: { menu: Menu; restaurantId: string }) 
     mutationFn: () => addToCart({ restaurantId, menuId: menu.id, quantity }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.cart.all });
-      toast.success(`${menu.name} ditambahkan ke keranjang`);
+      toast.success(`${menu.foodName} ditambahkan ke keranjang`);
       setQuantity(1);
     },
     onError: () => toast.error('Gagal menambahkan ke keranjang'),
@@ -52,16 +52,13 @@ function MenuCard({ menu, restaurantId }: { menu: Menu; restaurantId: string }) 
       <CardContent className="p-3 flex gap-3">
         <div className="relative size-20 rounded-lg overflow-hidden bg-muted shrink-0">
           {menu.image ? (
-            <Image src={menu.image} alt={menu.name} fill className="object-cover" sizes="80px" />
+            <Image src={menu.image} alt={menu.foodName} fill className="object-cover" sizes="80px" />
           ) : (
             <div className="h-full flex items-center justify-center text-2xl">🍜</div>
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-medium text-sm line-clamp-1">{menu.name}</p>
-          {menu.description && (
-            <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{menu.description}</p>
-          )}
+          <p className="font-medium text-sm line-clamp-1">{menu.foodName}</p>
           <p className="text-sm font-semibold mt-1">Rp{menu.price?.toLocaleString('id-ID')}</p>
         </div>
         {token && (
@@ -95,8 +92,8 @@ export default function RestaurantDetailPage({ params }: { params: Promise<{ id:
   const { id } = use(params);
 
   const { data: restaurant, isLoading, isError } = useQuery({
-    queryKey: queryKeys.restaurants.detail(id),
-    queryFn: () => getRestaurantById(id, { limitMenu: 50, limitReview: 10 }),
+    queryKey: queryKeys.restaurants.detail(Number(id)),
+    queryFn: () => getRestaurantById(Number(id), { limitMenu: 50, limitReview: 10 }),
   });
 
   if (isLoading) return <DetailSkeleton />;
@@ -113,8 +110,8 @@ export default function RestaurantDetailPage({ params }: { params: Promise<{ id:
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
       {/* Header Image */}
       <div className="relative h-56 md:h-72 rounded-xl overflow-hidden bg-muted">
-        {restaurant.image ? (
-          <Image src={restaurant.image} alt={restaurant.name} fill className="object-cover" sizes="896px" />
+        {(restaurant.logo || restaurant.images?.[0]) ? (
+          <Image src={restaurant.logo || restaurant.images[0]} alt={restaurant.name} fill className="object-cover" sizes="896px" />
         ) : (
           <div className="h-full flex items-center justify-center text-6xl">🍽️</div>
         )}
@@ -128,22 +125,19 @@ export default function RestaurantDetailPage({ params }: { params: Promise<{ id:
             <div className="flex items-center gap-2 mt-1 flex-wrap">
               <Badge variant="secondary">{restaurant.category}</Badge>
               <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                <MapPin className="size-3" /> {restaurant.location}
+                <MapPin className="size-3" /> {restaurant.place}
               </span>
             </div>
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <Star className="size-4 fill-yellow-400 text-yellow-400" />
-            <span className="font-semibold">{restaurant.rating?.toFixed(1) ?? '—'}</span>
+            <span className="font-semibold">{restaurant.star?.toFixed(1) ?? '—'}</span>
           </div>
         </div>
-        {restaurant.description && (
-          <p className="text-muted-foreground text-sm mt-2">{restaurant.description}</p>
-        )}
         <p className="text-sm mt-2">
           <span className="font-medium">Harga: </span>
-          Rp{restaurant.priceMin?.toLocaleString('id-ID')}
-          {restaurant.priceMax ? ` - Rp${restaurant.priceMax.toLocaleString('id-ID')}` : '+'}
+          Rp{restaurant.priceRange?.min?.toLocaleString('id-ID')}
+          {restaurant.priceRange?.max ? ` - Rp${restaurant.priceRange.max.toLocaleString('id-ID')}` : '+'}
         </p>
       </div>
 

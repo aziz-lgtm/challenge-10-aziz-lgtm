@@ -4,22 +4,14 @@ export interface ApiResponse<T> {
   success: boolean;
 }
 
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
 // Auth
 export interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
   phone: string;
   address?: string;
-  avatar?: string;
+  avatar?: string | null;
 }
 
 export interface AuthTokens {
@@ -28,51 +20,53 @@ export interface AuthTokens {
 
 // Restaurant
 export interface Restaurant {
-  id: string;
+  id: number;
   name: string;
-  description?: string;
-  address: string;
-  location: string;
+  star: number;
+  place: string;
+  logo: string;
+  images: string[];
   category: string;
-  rating: number;
-  priceMin: number;
-  priceMax: number;
-  image?: string;
-  distance?: number;
   reviewCount?: number;
+  menuCount?: number;
+  priceRange: { min: number; max: number };
+  distance?: number;
 }
 
 export interface Menu {
-  id: string;
-  restaurantId: string;
-  name: string;
-  description?: string;
+  id: number;
+  restaurantId?: number;
+  foodName: string;
   price: number;
   image?: string;
-  category?: string;
+  type?: string;
 }
 
 export interface Review {
-  id: string;
-  userId: string;
-  restaurantId: string;
+  id: number;
+  userId?: number;
+  restaurantId?: number;
   transactionId?: string;
   star: number;
   comment: string;
-  user?: Pick<User, 'id' | 'name' | 'avatar'>;
+  user?: { id: number; name: string; avatar?: string | null };
   createdAt: string;
 }
 
 export interface RestaurantDetail extends Restaurant {
+  averageRating?: number;
+  coordinates?: { lat: number; long: number };
+  totalMenus?: number;
+  totalReviews?: number;
   menus: Menu[];
   reviews: Review[];
 }
 
 // Cart
 export interface CartItem {
-  id: string;
-  menuId: string;
-  restaurantId: string;
+  id: number;
+  menuId: number;
+  restaurantId: number;
   quantity: number;
   menu: Menu;
 }
@@ -86,14 +80,14 @@ export interface CartGroup {
 export type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
 
 export interface OrderItem {
-  menuId: string;
+  menuId: number;
   quantity: number;
   menu: Menu;
 }
 
 export interface Order {
-  id: string;
-  userId: string;
+  id: number;
+  userId: number;
   status: OrderStatus;
   deliveryAddress: string;
   phone?: string;

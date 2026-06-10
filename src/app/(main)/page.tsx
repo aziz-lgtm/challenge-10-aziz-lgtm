@@ -81,7 +81,7 @@ export default function HomePage() {
     router.push(`?${params.toString()}`);
   }
 
-  const displayList = searchQuery ? (searchResults?.data ?? []) : (restaurants?.data ?? []);
+  const displayList = searchQuery ? (searchResults?.restaurants ?? []) : (restaurants?.restaurants ?? []);
   const isLoading = searchQuery ? isSearching : isLoadingResto;
   const showBestSeller = !searchQuery && !category && !rating;
 
@@ -141,9 +141,9 @@ export default function HomePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {Array.from({ length: 4 }).map((_, i) => <RestaurantCardSkeleton key={i} />)}
             </div>
-          ) : (bestSellers?.data?.length ?? 0) === 0 ? null : (
+          ) : (bestSellers?.restaurants?.length ?? 0) === 0 ? null : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {bestSellers?.data?.map((r) => <RestaurantCard key={r.id} restaurant={r} />)}
+              {bestSellers?.restaurants?.map((r) => <RestaurantCard key={r.id} restaurant={r} />)}
             </div>
           )}
         </section>

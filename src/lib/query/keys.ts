@@ -7,7 +7,7 @@ export const queryKeys = {
     bestSeller: (params?: { page?: number; limit?: number }) => ['restaurants', 'best-seller', params] as const,
     recommended: ['restaurants', 'recommended'] as const,
     nearby: (params?: { range?: number; limit?: number }) => ['restaurants', 'nearby', params] as const,
-    detail: (id: string) => ['restaurants', 'detail', id] as const,
+    detail: (id: number) => ['restaurants', 'detail', id] as const,
     search: (q: string, params?: { page?: number; limit?: number }) => ['restaurants', 'search', q, params] as const,
   },
   cart: {
