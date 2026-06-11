@@ -156,7 +156,7 @@ export default function HomePage() {
         />
 
         {/* Centered content */}
-        <div className="relative z-10 w-full max-w-[712px] mx-auto px-4 sm:px-6 flex flex-col items-center gap-8 sm:gap-10">
+        <div className="z-10 flex flex-col items-center p-0 gap-10 w-full px-4 sm:px-6 lg:absolute lg:w-[712px] lg:h-[200px] lg:left-1/2 lg:-translate-x-1/2 lg:top-[326px] lg:px-0">
           {/* Title + subtitle */}
           <div className="flex flex-col items-center gap-2 w-full text-center">
             <h1
@@ -193,17 +193,17 @@ export default function HomePage() {
       </section>
 
       {/* Content */}
-      <section className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+      <section className="px-30 py-8 space-y-8">
         {/* Category Icons */}
         {!searchQuery && (
-          <div className="flex gap-6 justify-start sm:justify-center overflow-x-auto pb-2">
+          <div className="flex flex-row items-center p-0 gap-6 overflow-x-auto w-full lg:justify-between lg:gap-[53px] lg:h-[138px] lg:overflow-visible">
             {CATEGORY_ICONS.map((cat) => {
               const isActive = view === cat.key;
               return (
                 <button
                   key={cat.key}
                   onClick={() => setView(cat.key)}
-                  className="flex flex-col items-center gap-2 shrink-0 group"
+                  className="flex flex-col justify-center items-center p-0 gap-1.5 mx-auto flex-none order-0 grow-0 group w-[120px] h-auto lg:w-[161px] lg:h-[138px]"
                 >
                   <div
                     className={`size-16 rounded-xl flex items-center justify-center transition-all ${
@@ -233,51 +233,54 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Section Header */}
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold">{sectionTitle}</h2>
-          {!searchQuery && (
-            <Link
-              href="/resto"
-              className="text-sm text-primary font-medium hover:underline"
-            >
-              See All
-            </Link>
+        {/* Category Results */}
+        <div className="flex flex-col items-center p-0 gap-6 w-full lg:gap-10">
+          {/* Section Header */}
+          <div className="flex items-center justify-between w-full">
+            <h2 className="text-xl font-bold">{sectionTitle}</h2>
+            {!searchQuery && (
+              <Link
+                href="/resto"
+                className="text-sm text-primary font-medium hover:underline"
+              >
+                See All
+              </Link>
+            )}
+          </div>
+
+          {/* Cards Grid */}
+          {isLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <CardSkeleton key={i} />
+              ))}
+            </div>
+          ) : displayList.length === 0 ? (
+            <div className="text-center py-20 text-muted-foreground w-full">
+              <p className="text-lg font-medium">No restaurants found</p>
+              <p className="text-sm mt-1">Try changing your search or category</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full">
+              {displayList.map((r) => (
+                <RestaurantCard key={r.id} restaurant={r} />
+              ))}
+            </div>
+          )}
+
+          {/* Show More */}
+          {!isLoading && displayList.length > 0 && !searchQuery && (
+            <div className="flex justify-center w-full pt-2">
+              <Button
+                variant="outline"
+                className="px-10 rounded-full"
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Show More
+              </Button>
+            </div>
           )}
         </div>
-
-        {/* Cards Grid */}
-        {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {Array.from({ length: 9 }).map((_, i) => (
-              <CardSkeleton key={i} />
-            ))}
-          </div>
-        ) : displayList.length === 0 ? (
-          <div className="text-center py-20 text-muted-foreground">
-            <p className="text-lg font-medium">No restaurants found</p>
-            <p className="text-sm mt-1">Try changing your search or category</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {displayList.map((r) => (
-              <RestaurantCard key={r.id} restaurant={r} />
-            ))}
-          </div>
-        )}
-
-        {/* Show More */}
-        {!isLoading && displayList.length > 0 && !searchQuery && (
-          <div className="flex justify-center pt-2">
-            <Button
-              variant="outline"
-              className="px-10 rounded-full"
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Show More
-            </Button>
-          </div>
-        )}
       </section>
     </div>
   );

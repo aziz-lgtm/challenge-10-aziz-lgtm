@@ -1,25 +1,27 @@
 'use client';
 
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { MapPin, Loader2 } from 'lucide-react';
 
 import { getProfile, updateProfile } from '@/lib/api/auth';
 import { queryKeys } from '@/lib/query/keys';
-import { useAuthStore } from '@/store/auth';
 import { profileSchema, type ProfileFormValues } from '@/lib/validations/profile';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
 
 export default function ProfilePage() {
-  const { setUser } = useAuthStore();
+  const queryClient = useQueryClient();
+
+  const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: queryKeys.auth.profile,
@@ -38,18 +40,40 @@ export default function ProfilePage() {
         phone: profile.phone ?? '',
         address: profile.address ?? '',
       });
+      if (profile.latitude && profile.longitude) {
+        setCoords({ latitude: profile.latitude, longitude: profile.longitude });
+      }
     }
   }, [profile, form]);
+
+  function handleUseLocation() {
+    if (!navigator.geolocation) {
+      toast.error('Browser tidak mendukung geolokasi');
+      return;
+    }
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCoords({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+        setIsLocating(false);
+        toast.success('Lokasi berhasil didapatkan');
+      },
+      () => {
+        setIsLocating(false);
+        toast.error('Gagal mendapatkan lokasi. Pastikan izin lokasi diaktifkan.');
+      }
+    );
+  }
 
   const { mutate, isPending } = useMutation({
     mutationFn: (values: ProfileFormValues) =>
       updateProfile({
         name: values.name,
         phone: values.phone || undefined,
-        address: values.address || undefined,
+        ...(coords && { latitude: coords.latitude, longitude: coords.longitude }),
       }),
-    onSuccess: (updated) => {
-      setUser(updated);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.profile });
       toast.success('Profil berhasil diperbarui');
     },
     onError: () => toast.error('Gagal memperbarui profil'),
@@ -57,18 +81,17 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-8 space-y-4">
+      <div className="px-30 py-8 space-y-4">
         <Skeleton className="h-8 w-32" />
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-20 w-full" />
         <Skeleton className="h-10 w-28" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
+    <div className="px-30 py-8 space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Profil Saya</h1>
         <p className="text-sm text-muted-foreground mt-1">{profile?.email}</p>
@@ -106,19 +129,33 @@ export default function ProfilePage() {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Alamat</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="Alamat pengiriman default..." rows={3} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Location */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Lokasi</p>
+            <div className="flex items-center gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleUseLocation}
+                disabled={isLocating}
+              >
+                {isLocating ? (
+                  <Loader2 className="size-4 mr-2 animate-spin" />
+                ) : (
+                  <MapPin className="size-4 mr-2" />
+                )}
+                {isLocating ? 'Mendapatkan lokasi...' : 'Gunakan Lokasi Saya'}
+              </Button>
+              {coords && (
+                <span className="text-xs text-muted-foreground">
+                  {coords.latitude.toFixed(5)}, {coords.longitude.toFixed(5)}
+                </span>
+              )}
+              {!coords && (
+                <span className="text-xs text-muted-foreground">Lokasi belum diset</span>
+              )}
+            </div>
+          </div>
 
           <Button type="submit" disabled={isPending}>
             {isPending ? 'Menyimpan...' : 'Simpan Perubahan'}

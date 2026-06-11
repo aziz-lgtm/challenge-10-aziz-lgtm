@@ -9,9 +9,9 @@ import { MapPin, CreditCard, FileText } from 'lucide-react';
 
 import { getCart } from '@/lib/api/cart';
 import { checkout } from '@/lib/api/order';
+import { getProfile } from '@/lib/api/auth';
 import { queryKeys } from '@/lib/query/keys';
 import { checkoutSchema, type CheckoutFormValues } from '@/lib/validations/checkout';
-import { useAuthStore } from '@/store/auth';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,7 +24,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 export default function CheckoutPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user } = useAuthStore();
+
+  const { data: profile } = useQuery({
+    queryKey: queryKeys.auth.profile,
+    queryFn: getProfile,
+  });
 
   const { data: cart, isLoading } = useQuery({
     queryKey: queryKeys.cart.all,
@@ -34,8 +38,8 @@ export default function CheckoutPage() {
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
-      deliveryAddress: user?.address ?? '',
-      phone: user?.phone ?? '',
+      deliveryAddress: profile?.address ?? '',
+      phone: profile?.phone ?? '',
       paymentMethod: 'cash',
       notes: '',
     },
@@ -81,7 +85,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+    <div className="px-30 py-8 space-y-6">
       <h1 className="text-2xl font-bold">Checkout</h1>
 
       {/* Order Summary */}

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 const exploreLinks = [
   { label: 'All Food', href: '/' },
@@ -54,35 +55,36 @@ function TikTokIcon() {
 
 export function Footer() {
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="max-w-6xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+    <footer className="bg-[#0A0D12] border-t border-[#D5D7DA] text-white">
+      <div className="flex flex-col md:flex-row justify-between items-start px-6 md:px-30 py-10 md:py-20 gap-10 md:gap-17.25 max-w-360 mx-auto">
           {/* Brand */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="text-primary text-2xl">✳</span>
-              <span className="text-xl font-bold">Foody</span>
+          <div className="flex flex-col items-start gap-10 w-full md:w-95 flex-none grow-0">
+            <div className="flex flex-row items-center p-0 gap-3.75 w-37.25 h-10.5 flex-none grow-0">
+              <div className="relative flex-none size-10.5">
+                <Image src="/login/claude.png" alt="Foody logo" fill className="object-contain" />
+              </div>
+              <span className="font-nunito font-extrabold text-[32px] leading-10.5 text-white w-23 h-10.5 flex-none order-1 grow-0">Foody</span>
             </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Taste homemade flavors &amp; chef&apos;s signature dishes. Freshly prepared every day. Order online or visit our nearest branch.
+            <p className="font-nunito font-normal text-base leading-7.5 tracking-[-0.02em] text-[#FDFDFD] w-full md:w-95 h-[90px] flex-none order-1 self-stretch grow-0">
+              Enjoy homemade flavors &amp; chef&apos;s signature dishes, freshly prepared every day. Order online or visit our nearest branch.
             </p>
-            <div>
-              <p className="text-sm font-semibold mb-3">Follow on Social Media</p>
-              <div className="flex gap-4 text-gray-400">
-                <a href="#" className="hover:text-white transition-colors"><FacebookIcon /></a>
-                <a href="#" className="hover:text-white transition-colors"><InstagramIcon /></a>
-                <a href="#" className="hover:text-white transition-colors"><LinkedinIcon /></a>
-                <a href="#" className="hover:text-white transition-colors"><TikTokIcon /></a>
+            <div className="flex flex-col justify-center items-start p-0 gap-5 w-full md:w-49 h-22.5 flex-none order-1 grow-0">
+              <p className="text-sm font-semibold">Follow on Social Media</p>
+              <div className="flex gap-3 text-gray-400">
+                <a href="#" className="hover:text-white transition-colors p-2 rounded-full border border-gray-700 hover:border-white"><FacebookIcon /></a>
+                <a href="#" className="hover:text-white transition-colors p-2 rounded-full border border-gray-700 hover:border-white"><InstagramIcon /></a>
+                <a href="#" className="hover:text-white transition-colors p-2 rounded-full border border-gray-700 hover:border-white"><LinkedinIcon /></a>
+                <a href="#" className="hover:text-white transition-colors p-2 rounded-full border border-gray-700 hover:border-white"><TikTokIcon /></a>
               </div>
             </div>
           </div>
 
           {/* Explore */}
-          <div>
-            <h3 className="font-semibold text-base mb-4">Explore</h3>
-            <ul className="space-y-2">
+          <div className="flex flex-col items-start p-0 gap-5 w-full md:w-50 h-82.5 flex-none order-1 grow-0">
+            <h3 className="font-semibold text-base">Explore</h3>
+            <ul className="flex flex-col items-start gap-5 w-full">
               {exploreLinks.map((link) => (
-                <li key={link.label}>
+                <li key={link.label} className="flex flex-row items-center p-0 gap-2 w-50 h-7.5 bg-gray-950 flex-none order-4 self-stretch grow-0">
                   <Link href={link.href} className="text-gray-400 hover:text-white text-sm transition-colors">
                     {link.label}
                   </Link>
@@ -92,11 +94,11 @@ export function Footer() {
           </div>
 
           {/* Help */}
-          <div>
-            <h3 className="font-semibold text-base mb-4">Help</h3>
-            <ul className="space-y-2">
+          <div className="flex flex-col items-start p-0 gap-5 w-full md:w-50 h-82.5 flex-none order-1 grow-0">
+            <h3 className="font-semibold text-base">Help</h3>
+            <ul className="flex flex-col items-start gap-5 w-full">
               {helpLinks.map((link) => (
-                <li key={link.label}>
+                <li key={link.label} className="flex flex-row items-center p-0 gap-2 w-50 h-7.5 bg-gray-950 flex-none order-4 self-stretch grow-0">
                   <Link href={link.href} className="text-gray-400 hover:text-white text-sm transition-colors">
                     {link.label}
                   </Link>
@@ -104,7 +106,6 @@ export function Footer() {
               ))}
             </ul>
           </div>
-        </div>
       </div>
     </footer>
   );

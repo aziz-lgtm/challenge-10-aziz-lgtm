@@ -9,11 +9,18 @@ import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/auth';
 import { useQuery } from '@tanstack/react-query';
 import { getCart } from '@/lib/api/cart';
+import { getProfile } from '@/lib/api/auth';
 import { queryKeys } from '@/lib/query/keys';
 import { cn } from '@/lib/utils';
 
 export function Navbar() {
-  const { token, user, clearAuth } = useAuthStore();
+  const { token, clearAuth } = useAuthStore();
+
+  const { data: user } = useQuery({
+    queryKey: queryKeys.auth.profile,
+    queryFn: getProfile,
+    enabled: !!token,
+  });
   const router = useRouter();
   const pathname = usePathname();
   const isHome = pathname === '/';
@@ -48,10 +55,10 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        'sticky top-0 w-full z-50 transition-all duration-300',
+        'sticky top-0 w-full z-50 transition-all duration-300 border-b',
         transparent
-          ? 'bg-transparent'
-          : 'bg-white border-b border-border shadow-sm'
+          ? 'bg-transparent border-transparent shadow-none'
+          : 'bg-white border-border shadow-sm'
       )}
     >
       <div
@@ -63,7 +70,7 @@ export function Navbar() {
         )}
       >
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 sm:gap-[15px]">
+        <Link href="/" className="flex flex-row items-center p-0 gap-[15px] w-[149px] h-[42px] flex-none order-0 grow-0">
           <div className="w-8 h-8 sm:w-[42px] sm:h-[42px] shrink-0">
             <Image
               src="/login/claude.png"
@@ -102,7 +109,7 @@ export function Navbar() {
                     height={32}
                     className={cn(
                       'w-full h-full object-contain transition-all duration-300',
-                      transparent && 'brightness-0 invert'
+                      transparent ? 'brightness-0 invert' : 'brightness-0'
                     )}
                   />
                 </div>

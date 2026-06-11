@@ -17,6 +17,8 @@ export interface UpdateProfilePayload {
   name?: string;
   phone?: string;
   address?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export async function login(payload: LoginPayload): Promise<{ token: string; user: User }> {
@@ -35,6 +37,11 @@ export async function getProfile(): Promise<User> {
 }
 
 export async function updateProfile(payload: UpdateProfilePayload): Promise<User> {
-  const res = await apiClient.put<{ data: User }>('/api/auth/profile', payload);
+  const form = new FormData();
+  if (payload.name) form.append('name', payload.name);
+  if (payload.phone) form.append('phone', payload.phone);
+  if (payload.latitude != null) form.append('latitude', String(payload.latitude));
+  if (payload.longitude != null) form.append('longitude', String(payload.longitude));
+  const res = await apiClient.put<{ data: User }>('/api/auth/profile', form);
   return res.data.data;
 }

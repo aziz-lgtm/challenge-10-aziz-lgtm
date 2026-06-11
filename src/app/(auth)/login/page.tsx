@@ -34,7 +34,7 @@ export default function LoginPage() {
   const { mutate, isPending } = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
-      setAuth(data.token, data.user);
+      setAuth(data.token);
       toast.success('Berhasil masuk!');
       const redirect = searchParams.get('redirect') ?? '/';
       router.push(redirect);

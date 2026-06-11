@@ -21,7 +21,7 @@ import type { Menu } from '@/types';
 
 function DetailSkeleton() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+    <div className="px-30 py-8 space-y-6">
       <Skeleton className="h-64 w-full rounded-xl" />
       <Skeleton className="h-8 w-1/2" />
       <Skeleton className="h-4 w-1/3" />
@@ -100,14 +100,14 @@ export default function RestaurantDetailPage({ params }: { params: Promise<{ id:
 
   if (isError || !restaurant) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center text-muted-foreground">
+      <div className="px-30 py-16 text-center text-muted-foreground">
         <p className="text-lg">Restoran tidak ditemukan</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+    <div className="px-30 py-8 space-y-6">
       {/* Header Image */}
       <div className="relative h-56 md:h-72 rounded-xl overflow-hidden bg-muted">
         {(restaurant.logo || restaurant.images?.[0]) ? (

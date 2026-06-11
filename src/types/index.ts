@@ -12,6 +12,8 @@ export interface User {
   phone: string;
   address?: string;
   avatar?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface AuthTokens {

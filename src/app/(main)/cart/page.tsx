@@ -107,7 +107,7 @@ export default function CartPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-4">
+      <div className="px-30 py-8 space-y-4">
         <Skeleton className="h-8 w-40" />
         {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)}
       </div>
@@ -117,7 +117,7 @@ export default function CartPage() {
   const isEmpty = !cart || cart.length === 0 || totalItems === 0;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="px-30 py-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Keranjang</h1>
         {!isEmpty && (

@@ -33,7 +33,7 @@ export default function RegisterPage() {
   const { mutate, isPending } = useMutation({
     mutationFn: ({ confirmPassword: _, ...payload }: RegisterFormValues) => register(payload),
     onSuccess: (data) => {
-      setAuth(data.token, data.user);
+      setAuth(data.token);
       toast.success('Akun berhasil dibuat!');
       router.push('/');
     },
