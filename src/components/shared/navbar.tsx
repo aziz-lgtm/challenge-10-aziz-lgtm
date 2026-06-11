@@ -1,18 +1,36 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { ShoppingCart, User, LogOut, UtensilsCrossed } from 'lucide-react';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/auth';
 import { useQuery } from '@tanstack/react-query';
 import { getCart } from '@/lib/api/cart';
 import { queryKeys } from '@/lib/query/keys';
+import { cn } from '@/lib/utils';
 
 export function Navbar() {
   const { token, user, clearAuth } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const isHome = pathname === '/';
+
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!isHome) return;
+    const onScroll = () => setIsScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isHome]);
+
+  // On home: transparent + white icons at top; white bg + original colors when scrolled
+  // On other pages: always default sticky styling
+  const transparent = isHome && !isScrolled;
 
   const { data: cart } = useQuery({
     queryKey: queryKeys.cart.all,
@@ -28,46 +46,136 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur">
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
-          <UtensilsCrossed className="size-5 text-primary" />
-          <span>FoodApp</span>
+    <header
+      className={cn(
+        'sticky top-0 w-full z-50 transition-all duration-300',
+        transparent
+          ? 'bg-transparent'
+          : 'bg-white border-b border-border shadow-sm'
+      )}
+    >
+      <div
+        className={cn(
+          'flex items-center justify-between transition-all duration-300',
+          isHome
+            ? 'h-16 sm:h-20 px-4 sm:px-12 lg:px-[120px]'
+            : 'max-w-6xl mx-auto px-4 h-14'
+        )}
+      >
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 sm:gap-[15px]">
+          <div className="w-8 h-8 sm:w-[42px] sm:h-[42px] shrink-0">
+            <Image
+              src="/login/claude.png"
+              alt="Foody logo"
+              width={42}
+              height={42}
+              className={cn(
+                'w-full h-full object-contain transition-all duration-300',
+                transparent && 'brightness-0 invert'
+              )}
+            />
+          </div>
+          <span
+            className={cn(
+              'font-[family-name:var(--font-nunito)] font-extrabold leading-tight transition-colors duration-300',
+              isHome
+                ? cn('text-2xl sm:text-[32px]', transparent ? 'text-white' : 'text-gray-900')
+                : 'text-xl text-gray-900'
+            )}
+          >
+            Foody
+          </span>
         </Link>
 
-        <nav className="flex items-center gap-2">
+        {/* Right actions */}
+        <div className={cn('flex items-center', isHome ? 'gap-4 sm:gap-6' : 'gap-2')}>
           {token ? (
             <>
-              <Link href="/cart">
-                <Button variant="ghost" size="icon" className="relative">
-                  <ShoppingCart className="size-5" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full size-4 flex items-center justify-center font-medium">
-                      {cartCount}
+              {/* Cart */}
+              <Link href="/cart" className="relative">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 shrink-0">
+                  <Image
+                    src="/hero/bag.png"
+                    alt="Cart"
+                    width={32}
+                    height={32}
+                    className={cn(
+                      'w-full h-full object-contain transition-all duration-300',
+                      transparent && 'brightness-0 invert'
+                    )}
+                  />
+                </div>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] rounded-full size-4 flex items-center justify-center font-medium leading-none">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* User avatar + name */}
+              <Link
+                href="/profile"
+                className="flex items-center gap-3 sm:gap-4 hover:opacity-80 transition-opacity"
+              >
+                <div className="size-10 sm:size-12 rounded-full overflow-hidden bg-primary flex items-center justify-center shrink-0">
+                  {user?.avatar ? (
+                    <Image
+                      src={user.avatar}
+                      alt={user.name ?? 'avatar'}
+                      width={48}
+                      height={48}
+                      className="object-cover w-full h-full"
+                    />
+                  ) : (
+                    <span className="text-white font-bold text-sm select-none">
+                      {user?.name?.[0]?.toUpperCase() ?? <User className="size-4 text-white" />}
                     </span>
                   )}
-                </Button>
+                </div>
+                {user?.name && (
+                  <span
+                    className={cn(
+                      'font-[family-name:var(--font-nunito)] font-semibold hidden sm:block transition-colors duration-300',
+                      isHome
+                        ? cn('text-base sm:text-lg leading-8 tracking-tight', transparent ? 'text-white' : 'text-gray-900')
+                        : 'text-sm text-gray-900'
+                    )}
+                  >
+                    {user.name}
+                  </span>
+                )}
               </Link>
-              <Link href="/profile">
-                <Button variant="ghost" size="icon">
-                  <User className="size-5" />
+
+              {/* Logout */}
+              {!isHome && (
+                <Button variant="ghost" size="icon" onClick={handleLogout}>
+                  <LogOut className="size-5" />
                 </Button>
-              </Link>
-              <Button variant="ghost" size="icon" onClick={handleLogout}>
-                <LogOut className="size-5" />
-              </Button>
+              )}
             </>
           ) : (
             <>
               <Link href="/login">
-                <Button variant="ghost" size="sm">Masuk</Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    'transition-colors duration-300',
+                    transparent && 'text-white hover:bg-white/10'
+                  )}
+                >
+                  Masuk
+                </Button>
               </Link>
               <Link href="/register">
-                <Button size="sm">Daftar</Button>
+                <Button size="sm" className="bg-primary hover:bg-primary/90 text-white">
+                  Daftar
+                </Button>
               </Link>
             </>
           )}
-        </nav>
+        </div>
       </div>
     </header>
   );

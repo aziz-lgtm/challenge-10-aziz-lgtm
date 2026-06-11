@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Nunito } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import { Toaster } from '@/components/ui/sonner';
@@ -14,6 +14,12 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const nunito = Nunito({
+  variable: '--font-nunito',
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '800'],
+});
+
 export const metadata: Metadata = {
   title: 'Restaurant App',
   description: 'Order food from your favorite restaurants',
@@ -25,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="id" className={`${geistSans.variable} ${geistMono.variable} ${nunito.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <Providers>
           {children}
