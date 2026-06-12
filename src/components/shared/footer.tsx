@@ -56,21 +56,23 @@ function TikTokIcon() {
 export function Footer() {
   return (
     <footer className="bg-[#0A0D12] border-t border-[#D5D7DA] text-white">
-      <div className="flex flex-col md:flex-row justify-between items-start px-6 md:px-30 py-10 md:py-20 gap-10 md:gap-17.25 max-w-360 mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-start px-4 md:px-30 pt-6 pb-12 md:py-20 gap-4 md:gap-17.25 max-w-360 mx-auto">
           {/* Brand */}
-          <div className="flex flex-col items-start gap-10 w-full md:w-95 flex-none grow-0">
-            <div className="flex flex-row items-center p-0 gap-3.75 w-37.25 h-10.5 flex-none grow-0">
-              <div className="relative flex-none size-10.5">
-                <Image src="/login/claude.png" alt="Foody logo" fill className="object-contain" />
+          <div className="flex flex-col items-start gap-4 md:gap-10 w-full md:w-95 flex-none grow-0">
+            <div className="flex flex-col items-start gap-5.5 md:gap-10 w-full flex-none grow-0">
+              <div className="flex flex-row items-center p-0 gap-3.75 w-37.25 h-10.5 flex-none grow-0">
+                <div className="relative flex-none size-10.5">
+                  <Image src="/login/claude.png" alt="Foody logo" fill className="object-contain" />
+                </div>
+                <span className="font-nunito font-extrabold text-[32px] leading-10.5 text-white w-23 h-10.5 flex-none order-1 grow-0">Foody</span>
               </div>
-              <span className="font-nunito font-extrabold text-[32px] leading-10.5 text-white w-23 h-10.5 flex-none order-1 grow-0">Foody</span>
+              <p className="font-nunito font-normal text-sm md:text-base leading-7 md:leading-7.5 tracking-[-0.02em] text-gray-25 w-full md:w-95 h-14 md:h-22.5 flex-none order-1 self-stretch grow-0">
+                Enjoy homemade flavors &amp; chef&apos;s signature dishes, freshly prepared every day. Order online or visit our nearest branch.
+              </p>
             </div>
-            <p className="font-nunito font-normal text-base leading-7.5 tracking-[-0.02em] text-[#FDFDFD] w-full md:w-95 h-[90px] flex-none order-1 self-stretch grow-0">
-              Enjoy homemade flavors &amp; chef&apos;s signature dishes, freshly prepared every day. Order online or visit our nearest branch.
-            </p>
-            <div className="flex flex-col justify-center items-start p-0 gap-5 w-full md:w-49 h-22.5 flex-none order-1 grow-0">
-              <p className="text-sm font-semibold">Follow on Social Media</p>
-              <div className="flex gap-3 text-gray-400">
+            <div className="flex flex-col justify-center items-start p-0 gap-5 w-49 h-22 flex-none order-1 grow-0">
+              <p className="flex flex-row items-center p-0 gap-2 w-49 h-7 text-sm font-semibold flex-none order-0 self-stretch grow-0">Follow on Social Media</p>
+              <div className="flex flex-row items-center p-0 gap-3 w-49 h-10 text-gray-400 flex-none order-1 self-stretch grow-0">
                 <a href="#" className="hover:text-white transition-colors p-2 rounded-full border border-gray-700 hover:border-white"><FacebookIcon /></a>
                 <a href="#" className="hover:text-white transition-colors p-2 rounded-full border border-gray-700 hover:border-white"><InstagramIcon /></a>
                 <a href="#" className="hover:text-white transition-colors p-2 rounded-full border border-gray-700 hover:border-white"><LinkedinIcon /></a>
@@ -79,32 +81,33 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Explore */}
-          <div className="flex flex-col items-start p-0 gap-5 w-full md:w-50 h-82.5 flex-none order-1 grow-0">
-            <h3 className="font-semibold text-base">Explore</h3>
-            <ul className="flex flex-col items-start gap-5 w-full">
-              {exploreLinks.map((link) => (
-                <li key={link.label} className="flex flex-row items-center p-0 gap-2 w-50 h-7.5 bg-gray-950 flex-none order-4 self-stretch grow-0">
-                  <Link href={link.href} className="text-gray-400 hover:text-white text-sm transition-colors">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Frame 100 — Explore + Help side by side on mobile, unwrapped on md+ */}
+          <div className="flex flex-row items-start p-0 gap-4 w-full h-73 flex-none order-1 self-stretch grow-0 md:contents">
 
-          {/* Help */}
-          <div className="flex flex-col items-start p-0 gap-5 w-full md:w-50 h-82.5 flex-none order-1 grow-0">
-            <h3 className="font-semibold text-base">Help</h3>
-            <ul className="flex flex-col items-start gap-5 w-full">
-              {helpLinks.map((link) => (
-                <li key={link.label} className="flex flex-row items-center p-0 gap-2 w-50 h-7.5 bg-gray-950 flex-none order-4 self-stretch grow-0">
+            {/* Explore */}
+            <div className="flex flex-col items-start p-0 gap-4 md:gap-5 min-w-0 md:w-50 h-73 md:h-82.5 flex-none order-0 grow md:grow-0">
+              <h3 className="font-semibold text-base">Explore</h3>
+              {exploreLinks.map((link) => (
+                <div key={link.label} className="flex flex-row items-center p-0 gap-2 w-full h-7 flex-none order-0 self-stretch grow-0">
                   <Link href={link.href} className="text-gray-400 hover:text-white text-sm transition-colors">
                     {link.label}
                   </Link>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
+
+            {/* Help */}
+            <div className="flex flex-col items-start p-0 gap-4 md:gap-5 min-w-0 md:w-50 h-62 md:h-82.5 flex-none order-1 grow md:grow-0">
+              <h3 className="font-semibold text-base">Help</h3>
+              {helpLinks.map((link) => (
+                <div key={link.label} className="flex flex-row items-center p-0 gap-2 w-full h-7 flex-none order-0 self-stretch grow-0">
+                  <Link href={link.href} className="text-gray-400 hover:text-white text-sm transition-colors">
+                    {link.label}
+                  </Link>
+                </div>
+              ))}
+            </div>
+
           </div>
       </div>
     </footer>

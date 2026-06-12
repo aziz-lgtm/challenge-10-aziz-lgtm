@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Search } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -55,7 +55,7 @@ function CardSkeleton() {
   );
 }
 
-export default function HomePage() {
+function HomePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { token: storeToken } = useAuthStore();
@@ -207,17 +207,17 @@ export default function HomePage() {
       </section>
 
       {/* Content */}
-      <section className="px-4 py-8 space-y-8 lg:px-30">
+      <section className="px-4 pt-6 pb-12 sm:py-8 space-y-4 sm:space-y-8 lg:px-30">
         {/* Category Icons */}
         {!searchQuery && (
-          <div className="flex flex-row flex-wrap items-center content-start py-6 gap-5 w-full lg:flex-nowrap lg:justify-between lg:gap-0">
+          <div className="grid grid-cols-3 gap-4 py-6 w-full lg:flex lg:flex-row lg:flex-nowrap lg:items-center lg:justify-between lg:gap-0">
             {CATEGORY_ICONS.map((cat) => {
               const isActive = view === cat.key;
               return (
                 <button
                   key={cat.key}
                   onClick={() => setView(cat.key)}
-                  className="flex flex-col justify-center items-center p-0 gap-1.5 min-w-0 group max-sm:gap-1 max-sm:flex-none max-sm:w-26.5 max-sm:h-33"
+                  className="flex flex-col justify-center items-center p-0 gap-1 group w-full lg:gap-1.5 lg:w-auto"
                 >
                   <div
                     className={`rounded-xl flex items-center justify-center transition-all max-sm:w-full max-sm:flex-1 sm:w-[clamp(64px,8vw,100px)] sm:h-[clamp(64px,8vw,100px)] ${
@@ -248,7 +248,7 @@ export default function HomePage() {
         )}
 
         {/* Category Results */}
-        <div className="flex flex-col items-center p-0 gap-6 w-full lg:gap-10">
+        <div className="flex flex-col items-center p-0 gap-4 sm:gap-6 w-full lg:gap-10">
           {/* Section Header */}
           <div className="flex items-center justify-between w-full">
             <h2 className="text-xl font-bold">{sectionTitle}</h2>
@@ -264,7 +264,7 @@ export default function HomePage() {
 
           {/* Cards Grid */}
           {isLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
               {Array.from({ length: 9 }).map((_, i) => (
                 <CardSkeleton key={i} />
               ))}
@@ -275,7 +275,7 @@ export default function HomePage() {
               <p className="text-sm mt-1">Try changing your search or category</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
               {displayList.map((r) => (
                 <RestaurantCard key={r.id} restaurant={r} />
               ))}
@@ -297,5 +297,13 @@ export default function HomePage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={null}>
+      <HomePageContent />
+    </Suspense>
   );
 }

@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Star, MapPin } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Star } from 'lucide-react';
 import type { Restaurant } from '@/types';
 
 interface RestaurantCardProps {
@@ -12,7 +11,7 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
   return (
     <Link href={`/resto/${restaurant.id}`}>
       <div
-        className="flex flex-row items-center p-4 gap-3 bg-white rounded-2xl flex-none order-0 grow-0 w-full h-auto transition-shadow hover:shadow-lg lg:h-38"
+        className="flex flex-row items-center p-3 gap-2 sm:p-4 sm:gap-3 bg-white rounded-2xl flex-none order-0 grow-0 w-full h-28.5 sm:h-auto transition-shadow hover:shadow-lg lg:h-38"
         style={{ boxShadow: '0px 0px 20px rgba(203, 202, 202, 0.25)' }}
       >
         {/* Image */}

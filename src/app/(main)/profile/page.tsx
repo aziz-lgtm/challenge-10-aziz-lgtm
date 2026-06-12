@@ -70,6 +70,7 @@ export default function ProfilePage() {
       updateProfile({
         name: values.name,
         phone: values.phone || undefined,
+        address: values.address || undefined,
         ...(coords && { latitude: coords.latitude, longitude: coords.longitude }),
       }),
     onSuccess: () => {

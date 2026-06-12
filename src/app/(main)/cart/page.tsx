@@ -24,13 +24,13 @@ function CartItemRow({ item, onUpdate, onDelete, isPending }: {
     <div className="flex items-center gap-3 py-3">
       <div className="relative size-16 rounded-lg overflow-hidden bg-muted shrink-0">
         {item.menu.image ? (
-          <Image src={item.menu.image} alt={item.menu.name} fill className="object-cover" sizes="64px" />
+          <Image src={item.menu.image} alt={item.menu.foodName} fill className="object-cover" sizes="64px" />
         ) : (
           <div className="h-full flex items-center justify-center text-2xl">🍜</div>
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-sm line-clamp-1">{item.menu.name}</p>
+        <p className="font-medium text-sm line-clamp-1">{item.menu.foodName}</p>
         <p className="text-sm text-muted-foreground">Rp{item.menu.price?.toLocaleString('id-ID')}</p>
       </div>
       <div className="flex items-center gap-2 shrink-0">
@@ -38,7 +38,7 @@ function CartItemRow({ item, onUpdate, onDelete, isPending }: {
           variant="outline"
           size="icon-xs"
           disabled={isPending || item.quantity <= 1}
-          onClick={() => onUpdate(item.id, item.quantity - 1)}
+          onClick={() => onUpdate(String(item.id), item.quantity - 1)}
         >
           <Minus />
         </Button>
@@ -47,7 +47,7 @@ function CartItemRow({ item, onUpdate, onDelete, isPending }: {
           variant="outline"
           size="icon-xs"
           disabled={isPending}
-          onClick={() => onUpdate(item.id, item.quantity + 1)}
+          onClick={() => onUpdate(String(item.id), item.quantity + 1)}
         >
           <Plus />
         </Button>
@@ -55,7 +55,7 @@ function CartItemRow({ item, onUpdate, onDelete, isPending }: {
           variant="ghost"
           size="icon-xs"
           disabled={isPending}
-          onClick={() => onDelete(item.id)}
+          onClick={() => onDelete(String(item.id))}
           className="text-destructive hover:text-destructive"
         >
           <Trash2 />

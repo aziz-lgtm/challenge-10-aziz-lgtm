@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono, Nunito } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
@@ -23,6 +23,11 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: 'Restaurant App',
   description: 'Order food from your favorite restaurants',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
