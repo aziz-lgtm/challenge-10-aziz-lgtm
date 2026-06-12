@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -17,7 +17,7 @@ import {
 import { queryKeys } from '@/lib/query/keys';
 import { useAuthStore } from '@/store/auth';
 import { RestaurantCard } from '@/components/shared/restaurant-card';
-import { Input } from '@/components/ui/input';
+
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { RestaurantFilterParams } from '@/types';
@@ -25,7 +25,9 @@ import type { RestaurantFilterParams } from '@/types';
 const CATEGORY_ICONS = [
   { key: 'all', label: 'All Restaurant', image: '/categories/All_restaurant.png' },
   { key: 'nearby', label: 'Nearby', image: '/categories/Nearby.png' },
+  { key: 'discount', label: 'Discount', image: '/categories/Discount.png' },
   { key: 'best-seller', label: 'Best Seller', image: '/categories/Best_seller.png' },
+  { key: 'delivery', label: 'Delivery', image: '/categories/Delivery.png' },
   { key: 'lunch', label: 'Lunch', image: '/categories/Lunch.png' },
 ] as const;
 
@@ -34,7 +36,9 @@ type CategoryKey = (typeof CATEGORY_ICONS)[number]['key'];
 const SECTION_LABELS: Record<CategoryKey, string> = {
   all: 'Recommended',
   nearby: 'Nearby',
+  discount: 'Discount',
   'best-seller': 'Best Seller',
+  delivery: 'Delivery',
   lunch: 'Lunch',
 };
 
@@ -54,7 +58,10 @@ function CardSkeleton() {
 export default function HomePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { token } = useAuthStore();
+  const { token: storeToken } = useAuthStore();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const token = mounted ? storeToken : null;
 
   const [searchInput, setSearchInput] = useState(searchParams.get('q') ?? '');
   const [page, setPage] = useState(1);
@@ -62,15 +69,21 @@ export default function HomePage() {
   const searchQuery = searchParams.get('q') ?? '';
   const view = (searchParams.get('view') ?? 'all') as CategoryKey;
 
+  const categoryFilter: Record<string, string> = {
+    lunch: 'Lunch',
+    discount: 'Discount',
+    delivery: 'Delivery',
+  };
+
   const filterParams: RestaurantFilterParams = {
-    ...(view === 'lunch' ? { category: 'Lunch' } : {}),
+    ...(categoryFilter[view] ? { category: categoryFilter[view] } : {}),
     limit: page * 9,
   };
 
   const { data: allRestaurants, isLoading: isLoadingAll } = useQuery({
     queryKey: queryKeys.restaurants.list({ ...filterParams, page }),
     queryFn: () => getRestaurants(filterParams),
-    enabled: !searchQuery && (view === 'all' || view === 'lunch'),
+    enabled: !searchQuery && (view === 'all' || view === 'lunch' || view === 'discount' || view === 'delivery'),
   });
 
   const { data: bestSellers, isLoading: isLoadingBestSeller } = useQuery({
@@ -104,7 +117,7 @@ export default function HomePage() {
     router.push(`?${params.toString()}`);
   }
 
-  function handleSearch(e: React.FormEvent<HTMLFormElement>) {
+  function handleSearch(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     const params = new URLSearchParams();
     if (searchInput.trim()) params.set('q', searchInput.trim());
@@ -132,6 +145,7 @@ export default function HomePage() {
     ? isLoadingRecommended
     : isLoadingAll;
 
+
   const sectionTitle = searchQuery
     ? `Results for "${searchQuery}"`
     : SECTION_LABELS[view];
@@ -156,7 +170,7 @@ export default function HomePage() {
         />
 
         {/* Centered content */}
-        <div className="z-10 flex flex-col items-center p-0 gap-10 w-full px-4 sm:px-6 lg:absolute lg:w-[712px] lg:h-[200px] lg:left-1/2 lg:-translate-x-1/2 lg:top-[326px] lg:px-0">
+        <div className="z-10 flex flex-col items-center p-0 gap-6 absolute w-[349px] h-[228px] left-1/2 -translate-x-1/2 top-[210px] lg:w-[712px] lg:h-[200px] lg:top-[326px]">
           {/* Title + subtitle */}
           <div className="flex flex-col items-center gap-2 w-full text-center">
             <h1
@@ -193,20 +207,20 @@ export default function HomePage() {
       </section>
 
       {/* Content */}
-      <section className="px-30 py-8 space-y-8">
+      <section className="px-4 py-8 space-y-8 lg:px-30">
         {/* Category Icons */}
         {!searchQuery && (
-          <div className="flex flex-row items-center p-0 gap-6 overflow-x-auto w-full lg:justify-between lg:gap-[53px] lg:h-[138px] lg:overflow-visible">
+          <div className="flex flex-row flex-wrap items-center content-start py-6 gap-5 w-full lg:flex-nowrap lg:justify-between lg:gap-0">
             {CATEGORY_ICONS.map((cat) => {
               const isActive = view === cat.key;
               return (
                 <button
                   key={cat.key}
                   onClick={() => setView(cat.key)}
-                  className="flex flex-col justify-center items-center p-0 gap-1.5 mx-auto flex-none order-0 grow-0 group w-[120px] h-auto lg:w-[161px] lg:h-[138px]"
+                  className="flex flex-col justify-center items-center p-0 gap-1.5 min-w-0 group max-sm:gap-1 max-sm:flex-none max-sm:w-26.5 max-sm:h-33"
                 >
                   <div
-                    className={`size-16 rounded-xl flex items-center justify-center transition-all ${
+                    className={`rounded-xl flex items-center justify-center transition-all max-sm:w-full max-sm:flex-1 sm:w-[clamp(64px,8vw,100px)] sm:h-[clamp(64px,8vw,100px)] ${
                       isActive
                         ? 'ring-2 ring-primary shadow-md bg-orange-50'
                         : 'bg-gray-50 hover:bg-gray-100'
@@ -215,9 +229,9 @@ export default function HomePage() {
                     <Image
                       src={cat.image}
                       alt={cat.label}
-                      width={40}
-                      height={40}
-                      className="object-contain"
+                      width={52}
+                      height={52}
+                      className="object-contain sm:w-[clamp(32px,4vw,52px)] sm:h-[clamp(32px,4vw,52px)]"
                     />
                   </div>
                   <span

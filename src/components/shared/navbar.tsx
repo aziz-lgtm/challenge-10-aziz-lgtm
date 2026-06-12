@@ -96,7 +96,7 @@ export function Navbar() {
         </Link>
 
         {/* Right actions */}
-        <div className={cn('flex items-center', isHome ? 'gap-4 sm:gap-6' : 'gap-2')}>
+        <div className={cn('flex flex-row justify-end items-center p-0 gap-4 h-12 flex-none order-1 grow-0')}>
           {token ? (
             <>
               {/* Cart */}
@@ -165,19 +165,38 @@ export function Navbar() {
             <>
               <Link href="/login">
                 <Button
-                  variant="ghost"
-                  size="sm"
+                  variant="outline"
                   className={cn(
-                    'transition-colors duration-300',
-                    transparent && 'text-white hover:bg-white/10'
+                    'box-border flex flex-row justify-center items-center p-2 gap-2',
+                    'w-40.75 h-12 border-2 rounded-full',
+                    'flex-none order-0 grow-0 transition-colors duration-300',
+                    transparent
+                      ? 'border-gray-300 text-white bg-transparent hover:bg-white/10 hover:text-white'
+                      : 'border-gray-950 text-gray-950 bg-transparent hover:bg-gray-100'
                   )}
                 >
-                  Masuk
+                  <span className="w-12.5 h-7.5 font-nunito font-bold text-base leading-7.5 tracking-[-0.02em] flex-none order-0 grow-0">
+                    Sign In
+                  </span>
                 </Button>
               </Link>
               <Link href="/register">
-                <Button size="sm" className="bg-primary hover:bg-primary/90 text-white">
-                  Daftar
+                <Button
+                  className={cn(
+                    'box-border flex flex-row justify-center items-center p-2 gap-2',
+                    'w-40.75 h-12 rounded-full',
+                    'flex-none order-1 grow-0 transition-colors duration-300',
+                    transparent
+                      ? 'bg-white text-gray-950 hover:bg-gray-100'
+                      : 'bg-gray-950 text-white hover:bg-gray-800'
+                  )}
+                >
+                  <span className={cn(
+                    'w-14.5 h-7.5 font-nunito font-bold text-base leading-7.5 tracking-[-0.02em] flex-none order-0 grow-0',
+                    transparent ? 'text-gray-950' : 'text-white'
+                  )}>
+                    Sign Up
+                  </span>
                 </Button>
               </Link>
             </>
