@@ -64,7 +64,7 @@ export function Footer() {
                 <div className="relative flex-none size-10.5">
                   <Image src="/login/claude.png" alt="Foody logo" fill className="object-contain" />
                 </div>
-                <span className="font-nunito font-extrabold text-[32px] leading-10.5 text-white w-23 h-10.5 flex-none order-1 grow-0">Foody</span>
+                <span className="font-nunito font-extrabold text-[2rem] leading-10.5 text-white w-23 h-10.5 flex-none order-1 grow-0">Foody</span>
               </div>
               <p className="font-nunito font-normal text-sm md:text-base leading-7 md:leading-7.5 tracking-[-0.02em] text-gray-25 w-full md:w-95 h-14 md:h-22.5 flex-none order-1 self-stretch grow-0">
                 Enjoy homemade flavors &amp; chef&apos;s signature dishes, freshly prepared every day. Order online or visit our nearest branch.

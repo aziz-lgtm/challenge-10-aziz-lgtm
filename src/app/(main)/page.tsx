@@ -12,8 +12,8 @@ import {
   getBestSellerRestaurants,
   searchRestaurants,
   getRecommendedRestaurants,
-  getNearbyRestaurants,
 } from '@/lib/api/resto';
+import { getProfile } from '@/lib/api/auth';
 import { queryKeys } from '@/lib/query/keys';
 import { useAuthStore } from '@/store/auth';
 import { RestaurantCard } from '@/components/shared/restaurant-card';
@@ -75,9 +75,21 @@ function HomePageContent() {
     delivery: 'Delivery',
   };
 
+  const { data: profile } = useQuery({
+    queryKey: queryKeys.auth.profile,
+    queryFn: getProfile,
+    enabled: !!token,
+  });
+
+  // The list endpoint only includes `distance` when BOTH `location` and
+  // `range` are sent (it ignores the latitude/longitude params and even the
+  // location value itself — they just act as a switch). `range` does filter,
+  // so keep it large to avoid hiding restaurants.
   const filterParams: RestaurantFilterParams = {
     ...(categoryFilter[view] ? { category: categoryFilter[view] } : {}),
     limit: page * 9,
+    location: profile?.address || 'Indonesia',
+    range: 10000,
   };
 
   const { data: allRestaurants, isLoading: isLoadingAll } = useQuery({
@@ -98,11 +110,18 @@ function HomePageContent() {
     enabled: !!token && !searchQuery && view === 'all',
   });
 
-  const { data: nearby, isLoading: isLoadingNearby } = useQuery({
-    queryKey: queryKeys.restaurants.nearby({ limit: page * 9 }),
-    queryFn: () => getNearbyRestaurants({ limit: page * 9 }),
-    enabled: !!token && !searchQuery && view === 'nearby',
+  // "Nearby" reuses the working list endpoint (which returns `distance`) and
+  // sorts client-side, nearest first. The dedicated /nearby endpoint depends on
+  // a server-stored user location the backend never persists, so it can't work.
+  const nearbyParams = { location: profile?.address || 'Indonesia', range: 50, limit: page * 9 };
+  const { data: nearbyData, isLoading: isLoadingNearby } = useQuery({
+    queryKey: queryKeys.restaurants.nearby(nearbyParams),
+    queryFn: () => getRestaurants(nearbyParams),
+    enabled: !searchQuery && view === 'nearby',
   });
+  const nearby = [...(nearbyData?.restaurants ?? [])].sort(
+    (a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity)
+  );
 
   const { data: searchResults, isLoading: isSearching } = useQuery({
     queryKey: queryKeys.restaurants.search(searchQuery),
@@ -151,7 +170,7 @@ function HomePageContent() {
     : SECTION_LABELS[view];
 
   return (
-    <div>
+    <div className="w-full">
       {/* Hero — negative margin pulls it up behind the sticky navbar */}
       <section className="relative w-full -mt-16 sm:-mt-20 min-h-125 sm:min-h-162.5 lg:min-h-206.75 flex items-center justify-center overflow-hidden">
         <Image
@@ -170,18 +189,18 @@ function HomePageContent() {
         />
 
         {/* Centered content */}
-        <div className="z-10 flex flex-col items-center p-0 gap-6 absolute w-[349px] h-[228px] left-1/2 -translate-x-1/2 top-[210px] lg:w-[712px] lg:h-[200px] lg:top-[326px]">
+        <div className="z-10 flex flex-col items-center p-0 gap-6 absolute w-87.25 h-57 left-1/2 -translate-x-1/2 top-52.5 lg:w-178 lg:h-50 lg:top-81.5">
           {/* Title + subtitle */}
           <div className="flex flex-col items-center gap-2 w-full text-center">
             <h1
               className="w-full font-[family-name:var(--font-nunito)] font-extrabold text-white"
-              style={{ fontSize: 'clamp(28px, 5vw, 48px)', lineHeight: '1.25' }}
+              style={{ fontSize: 'clamp(1.75rem, 5vw, 3rem)', lineHeight: '1.25' }}
             >
               Explore Culinary Experiences
             </h1>
             <p
               className="w-full font-[family-name:var(--font-nunito)] font-bold text-white"
-              style={{ fontSize: 'clamp(16px, 2.5vw, 24px)', lineHeight: '1.5' }}
+              style={{ fontSize: 'clamp(1rem, 2.5vw, 1.5rem)', lineHeight: '1.5' }}
             >
               Search and refine your choice to discover the perfect restaurant.
             </p>
@@ -190,9 +209,9 @@ function HomePageContent() {
           {/* Search bar — single pill input with icon */}
           <form
             onSubmit={handleSearch}
-            className="w-full max-w-[604px]"
+            className="w-full max-w-151"
           >
-            <div className="flex flex-row items-center gap-[6px] bg-white rounded-full px-6 py-2 h-12 sm:h-14 shadow-sm">
+            <div className="flex flex-row items-center gap-1.5 bg-white rounded-full px-6 py-2 h-12 sm:h-14 shadow-sm">
               <Search className="size-5 text-gray-500 shrink-0" />
               <input
                 type="text"
@@ -207,23 +226,23 @@ function HomePageContent() {
       </section>
 
       {/* Content */}
-      <section className="px-4 pt-6 pb-12 sm:py-8 space-y-4 sm:space-y-8 lg:px-30">
+      <section className="px-4 pt-6 pb-4 sm:py-8 space-y-4 sm:space-y-8 lg:px-30">
         {/* Category Icons */}
         {!searchQuery && (
-          <div className="grid grid-cols-3 gap-4 py-6 w-full lg:flex lg:flex-row lg:flex-nowrap lg:items-center lg:justify-between lg:gap-0">
+          <div className="grid grid-cols-3 gap-4 py-6 w-full lg:flex lg:flex-nowrap lg:justify-between lg:gap-0">
             {CATEGORY_ICONS.map((cat) => {
               const isActive = view === cat.key;
               return (
                 <button
                   key={cat.key}
                   onClick={() => setView(cat.key)}
-                  className="flex flex-col justify-center items-center p-0 gap-1 group w-full lg:gap-1.5 lg:w-auto"
+                  className="flex flex-col justify-center items-center p-0 gap-1 w-26.5 h-33 lg:w-auto lg:h-auto lg:gap-1.5 transition-transform duration-200 hover:scale-110 active:scale-95"
                 >
                   <div
-                    className={`rounded-xl flex items-center justify-center transition-all max-sm:w-full max-sm:flex-1 sm:w-[clamp(64px,8vw,100px)] sm:h-[clamp(64px,8vw,100px)] ${
+                    className={`rounded-xl flex items-center justify-center transition-all w-26.5 h-27 lg:w-[clamp(4rem,8vw,6.25rem)] lg:h-[clamp(4rem,8vw,6.25rem)] ${
                       isActive
                         ? 'ring-2 ring-primary shadow-md bg-orange-50'
-                        : 'bg-gray-50 hover:bg-gray-100'
+                        : 'bg-gray-50 hover:bg-gray-100 hover:shadow-md'
                     }`}
                   >
                     <Image
@@ -231,7 +250,7 @@ function HomePageContent() {
                       alt={cat.label}
                       width={52}
                       height={52}
-                      className="object-contain sm:w-[clamp(32px,4vw,52px)] sm:h-[clamp(32px,4vw,52px)]"
+                      className="object-contain lg:w-[clamp(2rem,4vw,3.25rem)] lg:h-[clamp(2rem,4vw,3.25rem)]"
                     />
                   </div>
                   <span

@@ -46,7 +46,7 @@ function LoginPageContent() {
   });
 
   return (
-    <div className="font-nunito min-h-screen flex">
+    <div className="font-nunito min-h-screen flex w-full">
       {/* Left — burger image, desktop only */}
       <div className="relative hidden md:flex md:w-1/2">
         <Image src="/login/burger.png" alt="Food" fill className="object-cover" priority />
@@ -78,7 +78,7 @@ function LoginPageContent() {
               className="font-extrabold text-gray-950"
               style={{
                 fontSize: 'clamp(1.52rem, 3.5vw, 2rem)',
-                lineHeight: 'clamp(32px, 4vw, 42px)',
+                lineHeight: 'clamp(2rem, 4vw, 2.625rem)',
               }}
             >
               Foody
@@ -91,7 +91,7 @@ function LoginPageContent() {
               className="font-extrabold text-gray-950 w-full self-stretch"
               style={{
                 fontSize: 'clamp(1.5rem, 3vw, 1.75rem)',
-                lineHeight: 'clamp(36px, 4vw, 38px)',
+                lineHeight: 'clamp(2.25rem, 4vw, 2.375rem)',
               }}
             >
               Welcome Back
@@ -100,7 +100,7 @@ function LoginPageContent() {
               className="font-medium text-gray-950 w-full self-stretch"
               style={{
                 fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
-                lineHeight: 'clamp(28px, 3vw, 30px)',
+                lineHeight: 'clamp(1.75rem, 3vw, 1.875rem)',
                 letterSpacing: '-0.03em',
               }}
             >
@@ -111,12 +111,12 @@ function LoginPageContent() {
           {/* Tabs — mobile: h-12 rounded-2xl, desktop: h-14 rounded-2xl */}
           <div className="flex flex-row items-center gap-2 p-2 w-full h-12 md:h-14 bg-gray-100 rounded-2xl self-stretch shrink-0">
             {/* Active tab — mobile: h-9 rounded-lg, desktop: h-10 rounded-xl */}
-            <div className="flex flex-row justify-center items-center px-3 py-2 gap-2 h-9 md:h-10 bg-white rounded-lg md:rounded-xl shadow-[0px_0px_20px_rgba(203,202,202,0.25)] grow">
+            <div className="flex flex-row justify-center items-center px-3 py-2 gap-2 h-9 md:h-10 bg-white rounded-lg md:rounded-xl shadow-[0_0_1.25rem_rgba(203,202,202,0.25)] grow">
               <span
                 className="font-bold text-gray-950"
                 style={{
                   fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
-                  lineHeight: 'clamp(28px, 3vw, 30px)',
+                  lineHeight: 'clamp(1.75rem, 3vw, 1.875rem)',
                   letterSpacing: '-0.02em',
                 }}
               >
@@ -132,7 +132,7 @@ function LoginPageContent() {
                 className="font-medium text-gray-600"
                 style={{
                   fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
-                  lineHeight: 'clamp(28px, 3vw, 30px)',
+                  lineHeight: 'clamp(1.75rem, 3vw, 1.875rem)',
                   letterSpacing: '-0.03em',
                 }}
               >
@@ -160,7 +160,7 @@ function LoginPageContent() {
                         className="flex flex-row justify-center items-center px-3 py-2 gap-2 w-full h-12 md:h-14 border border-gray-300 rounded-xl font-normal placeholder:text-gray-500 self-stretch"
                         style={{
                           fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
-                          lineHeight: 'clamp(28px, 3vw, 30px)',
+                          lineHeight: 'clamp(1.75rem, 3vw, 1.875rem)',
                           letterSpacing: '-0.02em',
                         }}
                         {...field}
@@ -170,7 +170,7 @@ function LoginPageContent() {
                       className="font-semibold text-primary self-stretch"
                       style={{
                         fontSize: 'clamp(0.75rem, 1.2vw, 0.875rem)',
-                        lineHeight: '28px',
+                        lineHeight: '1.75rem',
                         letterSpacing: '-0.02em',
                       }}
                     />
@@ -192,7 +192,7 @@ function LoginPageContent() {
                           className="flex flex-row justify-center items-center px-3 py-2 gap-2 w-full h-12 md:h-14 border border-gray-300 rounded-xl font-normal placeholder:text-gray-500 pr-10 self-stretch"
                           style={{
                             fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
-                            lineHeight: 'clamp(28px, 3vw, 30px)',
+                            lineHeight: 'clamp(1.75rem, 3vw, 1.875rem)',
                             letterSpacing: '-0.02em',
                           }}
                           {...field}
@@ -210,7 +210,7 @@ function LoginPageContent() {
                       className="font-semibold text-primary self-stretch"
                       style={{
                         fontSize: 'clamp(0.75rem, 1.2vw, 0.875rem)',
-                        lineHeight: '28px',
+                        lineHeight: '1.75rem',
                         letterSpacing: '-0.02em',
                       }}
                     />
@@ -222,14 +222,14 @@ function LoginPageContent() {
               <div className="flex flex-row items-center gap-2 shrink-0">
                 <Checkbox
                   id="remember"
-                  className="w-5 h-5 border border-gray-300 rounded-[6px] shrink-0"
+                  className="w-5 h-5 border border-gray-300 rounded-[0.375rem] shrink-0"
                 />
                 <label
                   htmlFor="remember"
                   className="font-medium text-gray-950 cursor-pointer select-none"
                   style={{
                     fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
-                    lineHeight: 'clamp(28px, 3vw, 30px)',
+                    lineHeight: 'clamp(1.75rem, 3vw, 1.875rem)',
                     letterSpacing: '-0.03em',
                   }}
                 >
@@ -243,7 +243,7 @@ function LoginPageContent() {
                 className="flex flex-row justify-center items-center gap-2 p-2 w-full h-12 bg-primary hover:bg-primary/90 rounded-full self-stretch grow-0 font-bold text-gray-25"
                 style={{
                   fontSize: 'clamp(0.875rem, 1.5vw, 1rem)',
-                  lineHeight: '30px',
+                  lineHeight: '1.875rem',
                   letterSpacing: '-0.02em',
                 }}
                 disabled={isPending}

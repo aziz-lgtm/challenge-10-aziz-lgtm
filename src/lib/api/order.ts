@@ -3,8 +3,8 @@ import type { Order, OrderStatus } from '@/types';
 
 export interface CheckoutPayload {
   restaurants: Array<{
-    restaurantId: string;
-    items: Array<{ menuId: string; quantity: number }>;
+    restaurantId: number;
+    items: Array<{ menuId: number; quantity: number }>;
   }>;
   deliveryAddress: string;
   phone?: string;
@@ -17,7 +17,12 @@ export async function checkout(payload: CheckoutPayload): Promise<Order> {
   return res.data.data;
 }
 
-export async function getMyOrders(params?: { status?: OrderStatus; page?: number; limit?: number }): Promise<{ data: Order[]; total: number; page: number; totalPages: number }> {
-  const res = await apiClient.get('/api/order/my-order', { params });
-  return res.data;
+export interface MyOrdersResponse {
+  orders: Order[];
+  pagination: { page: number; limit: number; total: number; totalPages: number };
+}
+
+export async function getMyOrders(params?: { status?: OrderStatus; page?: number; limit?: number }): Promise<MyOrdersResponse> {
+  const res = await apiClient.get<{ data: MyOrdersResponse }>('/api/order/my-order', { params });
+  return res.data.data;
 }

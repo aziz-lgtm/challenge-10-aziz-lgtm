@@ -79,28 +79,43 @@ export interface CartGroup {
 }
 
 // Order
-export type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
+export type OrderStatus = 'preparing' | 'on_the_way' | 'delivered' | 'done' | 'cancelled';
 
 export interface OrderItem {
   menuId: number;
+  menuName: string;
+  price: number;
+  image?: string;
   quantity: number;
-  menu: Menu;
+  itemTotal: number;
+}
+
+export interface OrderPricing {
+  subtotal: number;
+  serviceFee: number;
+  deliveryFee: number;
+  totalPrice: number;
+}
+
+export interface OrderRestaurantGroup {
+  restaurant: { id: number; name: string; logo?: string };
+  items: OrderItem[];
+  subtotal: number;
 }
 
 export interface Order {
   id: number;
-  userId: number;
+  transactionId: string;
+  userId?: number;
   status: OrderStatus;
   deliveryAddress: string;
   phone?: string;
   paymentMethod?: string;
   notes?: string;
-  totalPrice: number;
+  pricing: OrderPricing;
+  restaurants: OrderRestaurantGroup[];
   createdAt: string;
-  restaurants: Array<{
-    restaurant: Restaurant;
-    items: OrderItem[];
-  }>;
+  updatedAt?: string;
 }
 
 // Filter params
@@ -114,4 +129,6 @@ export interface RestaurantFilterParams {
   page?: number;
   limit?: number;
   q?: string;
+  latitude?: number;
+  longitude?: number;
 }

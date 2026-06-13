@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, MapPin, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/auth';
 import { useQuery } from '@tanstack/react-query';
@@ -26,14 +26,32 @@ export function Navbar() {
   const isHome = pathname === '/';
 
   const [isScrolled, setIsScrolled] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isHome) return;
-    const onScroll = () => setIsScrolled(window.scrollY > 10);
+    const getScrollY = () =>
+      window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const onScroll = () => setIsScrolled(getScrollY() > 10);
     window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('scroll', onScroll);
+    };
   }, [isHome]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [dropdownOpen]);
 
   // On home: transparent + white icons at top; white bg + original colors when scrolled
   // On other pages: always default sticky styling
@@ -55,7 +73,7 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        'sticky top-0 w-full z-50 transition-all duration-300 border-b',
+        'fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 border-b',
         transparent
           ? 'bg-transparent border-transparent shadow-none'
           : 'bg-white border-border shadow-sm'
@@ -65,13 +83,13 @@ export function Navbar() {
         className={cn(
           'flex items-center justify-between transition-all duration-300',
           isHome
-            ? 'h-16 sm:h-20 px-4 sm:px-12 lg:px-[120px]'
+            ? 'h-16 sm:h-20 px-4 sm:px-12 lg:px-30'
             : 'max-w-6xl mx-auto px-4 h-14'
         )}
       >
         {/* Logo */}
-        <Link href="/" className="flex flex-row items-center p-0 gap-[15px] w-[149px] h-[42px] flex-none order-0 grow-0">
-          <div className="w-8 h-8 sm:w-[42px] sm:h-[42px] shrink-0">
+        <Link href="/" className="flex flex-row items-center p-0 gap-3.75 w-37.25 h-10.5 flex-none order-0 grow-0">
+          <div className="w-8 h-8 sm:w-10.5 sm:h-10.5 shrink-0">
             <Image
               src="/login/claude.png"
               alt="Foody logo"
@@ -87,7 +105,7 @@ export function Navbar() {
             className={cn(
               'font-[family-name:var(--font-nunito)] font-extrabold leading-tight transition-colors duration-300',
               isHome
-                ? cn('text-2xl sm:text-[32px]', transparent ? 'text-white' : 'text-gray-900')
+                ? cn('text-2xl sm:text-[2rem]', transparent ? 'text-white' : 'text-gray-900')
                 : 'text-xl text-gray-900'
             )}
           >
@@ -99,28 +117,86 @@ export function Navbar() {
         <div className={cn('flex flex-row justify-end items-center p-0 gap-4 h-12 flex-none order-1 grow-0')}>
           {token ? (
             <>
-              {/* Cart */}
-              <Link href="/cart" className="relative">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 shrink-0">
-                  <Image
-                    src="/hero/bag.png"
-                    alt="Cart"
-                    width={32}
-                    height={32}
-                    className={cn(
-                      'w-full h-full object-contain transition-all duration-300',
-                      transparent ? 'brightness-0 invert' : 'brightness-0'
-                    )}
-                  />
-                </div>
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] rounded-full size-4 flex items-center justify-center font-medium leading-none">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
+              {/* Cart bag + dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setDropdownOpen((v) => !v)}
+                  className="relative transition-transform duration-200 hover:scale-110 active:scale-95"
+                >
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 shrink-0">
+                    <Image
+                      src="/hero/bag.png"
+                      alt="Cart"
+                      width={32}
+                      height={32}
+                      className={cn(
+                        'w-full h-full object-contain transition-all duration-300',
+                        transparent ? 'brightness-0 invert' : 'brightness-0'
+                      )}
+                    />
+                  </div>
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-white text-[0.625rem] rounded-full size-4 flex items-center justify-center font-medium leading-none">
+                      {cartCount}
+                    </span>
+                  )}
+                </button>
 
-              {/* User avatar + name */}
+                {dropdownOpen && (
+                  <div className="absolute right-0 top-full mt-3 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                    {/* Header */}
+                    <div className="flex items-center gap-3 px-5 py-4">
+                      <div className="size-12 rounded-full overflow-hidden bg-primary flex items-center justify-center shrink-0">
+                        {user?.avatar ? (
+                          <Image
+                            src={user.avatar}
+                            alt={user.name ?? 'avatar'}
+                            width={48}
+                            height={48}
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <span className="text-white font-bold text-sm select-none">
+                            {user?.name?.[0]?.toUpperCase() ?? <User className="size-4 text-white" />}
+                          </span>
+                        )}
+                      </div>
+                      <span className="font-bold text-gray-900 text-base">{user?.name}</span>
+                    </div>
+
+                    <div className="border-t border-gray-100" />
+
+                    {/* Menu items */}
+                    <div className="py-2">
+                      <Link
+                        href="/profile"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-3 px-5 py-3 text-gray-800 hover:bg-gray-50 transition-colors"
+                      >
+                        <MapPin className="size-5 shrink-0" />
+                        <span className="font-medium text-sm">Delivery Address</span>
+                      </Link>
+                      <Link
+                        href="/orders"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-3 px-5 py-3 text-gray-800 hover:bg-gray-50 transition-colors"
+                      >
+                        <ClipboardList className="size-5 shrink-0" />
+                        <span className="font-medium text-sm">My Orders</span>
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-5 py-3 text-gray-800 hover:bg-gray-50 transition-colors"
+                      >
+                        <LogOut className="size-5 shrink-0" />
+                        <span className="font-medium text-sm">Logout</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* User avatar → profile page */}
               <Link
                 href="/profile"
                 className="flex items-center gap-3 sm:gap-4 hover:opacity-80 transition-opacity"
@@ -143,7 +219,7 @@ export function Navbar() {
                 {user?.name && (
                   <span
                     className={cn(
-                      'font-[family-name:var(--font-nunito)] font-semibold hidden sm:block transition-colors duration-300',
+                      'font-nunito font-semibold hidden sm:block transition-colors duration-300',
                       isHome
                         ? cn('text-base sm:text-lg leading-8 tracking-tight', transparent ? 'text-white' : 'text-gray-900')
                         : 'text-sm text-gray-900'
@@ -153,13 +229,6 @@ export function Navbar() {
                   </span>
                 )}
               </Link>
-
-              {/* Logout */}
-              {!isHome && (
-                <Button variant="ghost" size="icon" onClick={handleLogout}>
-                  <LogOut className="size-5" />
-                </Button>
-              )}
             </>
           ) : (
             <>

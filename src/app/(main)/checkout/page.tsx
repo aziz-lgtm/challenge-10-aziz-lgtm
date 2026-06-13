@@ -85,7 +85,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="px-30 py-8 space-y-6">
+    <div className="px-30 py-8 space-y-6 w-full">
       <h1 className="text-2xl font-bold">Checkout</h1>
 
       {/* Order Summary */}
@@ -99,7 +99,7 @@ export default function CheckoutPage() {
               <p className="text-sm font-medium">{group.restaurant.name}</p>
               {group.items.map((item) => (
                 <div key={item.id} className="flex justify-between text-sm text-muted-foreground pl-2">
-                  <span>{item.menu.name} x{item.quantity}</span>
+                  <span>{item.menu.foodName} x{item.quantity}</span>
                   <span>Rp{(item.menu.price * item.quantity).toLocaleString('id-ID')}</span>
                 </div>
               ))}

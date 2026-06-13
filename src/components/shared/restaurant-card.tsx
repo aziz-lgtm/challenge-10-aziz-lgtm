@@ -9,10 +9,10 @@ interface RestaurantCardProps {
 
 export function RestaurantCard({ restaurant }: RestaurantCardProps) {
   return (
-    <Link href={`/resto/${restaurant.id}`}>
+    <Link href={`/resto/${restaurant.id}`} className="block transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]">
       <div
-        className="flex flex-row items-center p-3 gap-2 sm:p-4 sm:gap-3 bg-white rounded-2xl flex-none order-0 grow-0 w-full h-28.5 sm:h-auto transition-shadow hover:shadow-lg lg:h-38"
-        style={{ boxShadow: '0px 0px 20px rgba(203, 202, 202, 0.25)' }}
+        className="flex flex-row items-center p-3 gap-2 sm:p-4 sm:gap-3 bg-white rounded-2xl flex-none order-0 grow-0 w-full h-28.5 sm:h-auto transition-shadow hover:shadow-xl lg:h-38"
+        style={{ boxShadow: '0 0 1.25rem rgba(203, 202, 202, 0.25)' }}
       >
         {/* Image */}
         <div className="relative size-20 lg:size-30 rounded-xl overflow-hidden bg-muted shrink-0">

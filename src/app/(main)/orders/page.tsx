@@ -12,19 +12,22 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { BackButton } from '@/components/shared/back-button';
 import type { Order, OrderStatus } from '@/types';
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
-  pending: 'Menunggu',
-  processing: 'Diproses',
-  completed: 'Selesai',
+  preparing: 'Disiapkan',
+  on_the_way: 'Dikirim',
+  delivered: 'Terkirim',
+  done: 'Selesai',
   cancelled: 'Dibatalkan',
 };
 
 const STATUS_VARIANTS: Record<OrderStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-  pending: 'secondary',
-  processing: 'default',
-  completed: 'outline',
+  preparing: 'secondary',
+  on_the_way: 'default',
+  delivered: 'default',
+  done: 'outline',
   cancelled: 'destructive',
 };
 
@@ -38,7 +41,7 @@ function OrderCard({ order }: { order: Order }) {
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs text-muted-foreground">#{order.id.slice(0, 8).toUpperCase()}</p>
+            <p className="text-xs text-muted-foreground">#{order.transactionId}</p>
             <p className="text-sm text-muted-foreground">{date}</p>
           </div>
           <Badge variant={STATUS_VARIANTS[order.status]}>
@@ -52,7 +55,7 @@ function OrderCard({ order }: { order: Order }) {
             <p className="text-sm font-medium">{group.restaurant.name}</p>
             <div className="text-xs text-muted-foreground pl-2 space-y-0.5 mt-0.5">
               {group.items.map((item) => (
-                <p key={item.menuId}>{item.menu.name} x{item.quantity}</p>
+                <p key={item.menuId}>{item.menuName} x{item.quantity}</p>
               ))}
             </div>
           </div>
@@ -60,7 +63,7 @@ function OrderCard({ order }: { order: Order }) {
         <Separator />
         <div className="flex justify-between">
           <span className="text-sm text-muted-foreground">Total</span>
-          <span className="font-semibold">Rp{order.totalPrice?.toLocaleString('id-ID')}</span>
+          <span className="font-semibold">Rp{order.pricing?.totalPrice?.toLocaleString('id-ID')}</span>
         </div>
         <div className="flex justify-between text-sm text-muted-foreground">
           <span>Pengiriman ke</span>
@@ -73,9 +76,10 @@ function OrderCard({ order }: { order: Order }) {
 
 const ORDER_STATUSES: Array<{ label: string; value: string }> = [
   { label: 'Semua', value: '' },
-  { label: 'Menunggu', value: 'pending' },
-  { label: 'Diproses', value: 'processing' },
-  { label: 'Selesai', value: 'completed' },
+  { label: 'Disiapkan', value: 'preparing' },
+  { label: 'Dikirim', value: 'on_the_way' },
+  { label: 'Terkirim', value: 'delivered' },
+  { label: 'Selesai', value: 'done' },
   { label: 'Dibatalkan', value: 'cancelled' },
 ];
 
@@ -96,7 +100,8 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="px-30 py-8 space-y-6">
+    <div className="px-30 py-8 space-y-6 w-full">
+      <BackButton />
       <h1 className="text-2xl font-bold">Riwayat Pesanan</h1>
 
       {/* Status Filter */}
@@ -117,7 +122,7 @@ export default function OrdersPage() {
         <div className="space-y-4">
           {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-40 w-full rounded-xl" />)}
         </div>
-      ) : !data?.data || data.data.length === 0 ? (
+      ) : !data?.orders || data.orders.length === 0 ? (
         <div className="text-center py-16 space-y-3 text-muted-foreground">
           <ClipboardList className="size-16 mx-auto opacity-30" />
           <p className="text-lg">Belum ada pesanan</p>
@@ -125,7 +130,7 @@ export default function OrdersPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {data.data.map((order) => <OrderCard key={order.id} order={order} />)}
+          {data.orders.map((order) => <OrderCard key={order.id} order={order} />)}
         </div>
       )}
     </div>

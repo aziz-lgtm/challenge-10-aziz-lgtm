@@ -6,7 +6,7 @@ export const queryKeys = {
     list: (params?: RestaurantFilterParams) => ['restaurants', 'list', params] as const,
     bestSeller: (params?: { page?: number; limit?: number }) => ['restaurants', 'best-seller', params] as const,
     recommended: ['restaurants', 'recommended'] as const,
-    nearby: (params?: { range?: number; limit?: number }) => ['restaurants', 'nearby', params] as const,
+    nearby: (params?: { location?: string; range?: number; limit?: number }) => ['restaurants', 'nearby', params] as const,
     detail: (id: number) => ['restaurants', 'detail', id] as const,
     search: (q: string, params?: { page?: number; limit?: number }) => ['restaurants', 'search', q, params] as const,
   },

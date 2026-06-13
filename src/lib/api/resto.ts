@@ -36,6 +36,8 @@ export async function getRecommendedRestaurants(): Promise<Restaurant[]> {
   return res.data.data;
 }
 
+// Per the API spec, /nearby only accepts `range` and `limit`; it derives the
+// user's position from their stored profile location (not from query coords).
 export async function getNearbyRestaurants(params?: { range?: number; limit?: number }): Promise<Restaurant[]> {
   const res = await apiClient.get<{ data: Restaurant[] }>('/api/resto/nearby', { params });
   return res.data.data;
